@@ -183,7 +183,7 @@ void Feet::move_r_leg_backward() {
 
 void Feet::walk_forward() {
     move_all_initial();
-    move_l_foot_inicial_pos();
+    move_l_foot_down();
     move_l_leg_forward();
     move_l_foot_inicial_pos();
     move_r_foot_up();
@@ -204,6 +204,22 @@ void Feet::initialize_feet() {
     pca9685.setPWMFreq(50); // Frequência padrão para servos (50 Hz)
 }
 
+void Feet::turn_around() {
+    Serial.println("Rodando 180 graus...");
+
+    for (int i = 0; i < 4; i++) {  // 4 passos para uma volta completa
+        move_r_foot_up();           // Levanta o pé direito
+        move_l_leg_backward();      // Move a perna esquerda para trás
+        move_r_foot_inicial_pos();  // Volta o pé direito para a posição inicial
+
+        move_l_foot_up();           // Levanta o pé esquerdo
+        move_r_leg_forward();       // Move a perna direita para frente
+        move_l_foot_inicial_pos();  // Volta o pé esquerdo para a posição inicial
+    }
+
+    move_all_initial(); // Garante que os pés ficam na posição inicial após a rotação
+    Serial.println("Rotação completa.");
+}
 
 int Feet::measure_distance() {
     Serial.println("Medindo distância...");
@@ -229,6 +245,148 @@ int Feet::measure_distance() {
 
     return distancia;
 }
+
+void Feet::move_l_leg_forward_full() {
+    Serial.println("Movendo perna esquerda para frente...");
+
+    int novo_pwm_l = pwm_l_leg_atual + step;
+    while (novo_pwm_l < 2000) {  
+        pca9685.writeMicroseconds(L_leg, novo_pwm_l);
+        //delay(10);
+        novo_pwm_l += step;
+    }
+    pwm_l_leg_atual = 2000;  // Atualiza a posição da perna esquerda
+}
+
+void Feet::move_l_leg_backward_full() {
+    Serial.println("Movendo perna esquerda para trás...");
+
+    int novo_pwm_l = pwm_l_leg_atual - step;
+    while (novo_pwm_l > 500) {  
+        pca9685.writeMicroseconds(L_leg, novo_pwm_l);
+        //delay(10);
+        novo_pwm_l -= step;
+    }
+    pwm_l_leg_atual = 500;  // Atualiza a posição da perna esquerda
+}
+
+void Feet::move_r_leg_forward_full() {
+    Serial.println("Movendo perna direita para frente...");
+
+    int novo_pwm_r = pwm_r_leg_atual - step;
+    while (novo_pwm_r > 1150) {  
+        pca9685.writeMicroseconds(R_leg, novo_pwm_r);
+        //delay(10);
+        novo_pwm_r -= step;
+    }
+    pwm_r_leg_atual = 1150;  // Atualiza a posição da perna direita
+}
+
+void Feet::move_r_leg_backward_full() {
+    Serial.println("Movendo perna direita para trás...");
+
+    int novo_pwm_r = pwm_r_leg_atual + step;
+    while (novo_pwm_r < 2600) {  
+        pca9685.writeMicroseconds(R_leg, novo_pwm_r);
+        //delay(10);
+        novo_pwm_r += step;
+    }
+    pwm_r_leg_atual = 2600;  // Atualiza a posição da perna direita
+}
+
+void Feet::move_l_foot_up_full() {
+    Serial.println("Levantando pé esquerdo...");
+    Serial.print("Pé esquerdo atual antes de mover: "); Serial.println(pwm_l_atual);
+
+    int novo_pwm = pwm_l_atual;
+    while (novo_pwm <= 1800) {  // Corrigido: agora inclui o MAX_L corretamente
+        pca9685.writeMicroseconds(L_foot, novo_pwm);
+        novo_pwm += step;
+    }
+
+    pwm_l_atual = 1800;  // Atualiza o valor corretamente
+    Serial.print("Novo valor de pwm_l_atual: "); Serial.println(pwm_l_atual);
+}
+
+void Feet::move_l_foot_down_full() {
+    Serial.println("Baixando pé esquerdo...");
+
+    int novo_pwm = pwm_l_atual + step;
+    while (novo_pwm > 800) {  // Garante que não ultrapassa o limite inferior
+        pca9685.writeMicroseconds(L_foot, novo_pwm);
+        //delay(10);
+        novo_pwm -= step;
+    }
+    pwm_l_atual = 800;  // Atualiza a posição atual do servo
+}
+
+void Feet::move_r_foot_down_full() {
+    Serial.println("Baixando pé direito...");
+
+    int novo_pwm = pwm_r_atual + step;
+    while (novo_pwm < 1500) {
+        pca9685.writeMicroseconds(R_foot, novo_pwm);
+        //delay(5);
+        novo_pwm += step;
+    }
+    pwm_r_atual = 1500;
+}
+
+void Feet::move_r_foot_up_full() {
+    Serial.println("Levantando pé direito...");
+
+    int novo_pwm = pwm_r_atual - step;
+    while (novo_pwm > 500) {
+        pca9685.writeMicroseconds(R_foot, novo_pwm);
+        //delay(5);
+        novo_pwm -= step;
+    }
+    pwm_r_atual = 500;
+}
+
+
+void Feet::turn_right(){
+    
+    move_r_foot_up();
+    move_l_foot_up();
+    move_r_foot_down();
+    move_l_foot_down();
+
+    Serial.println("90 graus para a direita...");
+
+    move_all_initial();      // Garante que os pés começam alinhados
+    move_r_foot_up_full();        // Levanta o pé direito para reduzir atrito
+    move_l_leg_forward_full();  // Move a perna esquerda para frente
+    move_r_leg_backward_full(); // Move a perna direita para trás
+    move_r_foot_inicial_pos();  // Coloca o pé direito no chão
+
+    move_all_initial();      // Retorna à posição base
+
+    Serial.println("90 graus completa.");
+    
+
+
+    
+
+}
+
+void Feet::hello_all() {
+    Serial.println("Executando hello_all() 3 vezes...");
+
+    for (int i = 0; i < 9; i++) {  // Repete 3 vezes
+        Serial.print("Execução número: "); Serial.println(i + 1);
+        
+        move_l_foot_down_full();  // Movimento correto
+        move_l_foot_inicial_pos();
+
+        delay(500);  // Pequena pausa para evitar sobrecarga mecânica
+    }
+
+    Serial.println("Finalizado hello_all() 3 vezes.");
+}
+
+//void Feet::move_sideway(){
+
 
 
 
