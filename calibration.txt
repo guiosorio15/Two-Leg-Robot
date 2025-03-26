@@ -1,0 +1,30 @@
+servo perna esquerda 0 - 60 (plano) - 140 (bicos de pés)
+servo perna direita 60 - 40 (plano) - 00 (bicos de pés)
+
+-----------------------------------------------
+PWM
+------------------------------------------------
+servo pé esquerdo:
+
+BICO DE PÉ [1800]
+PLANO[1225]
+CALCANHAR [800]
+
+servo pé direito:
+ 
+BICO DE PÉ [500]
+PLANO[1000]
+CALCANHAR [1500]
+
+
+SERVO PERNA DIREITA:
+
+INICIAL [2200]
+ROTAÇÃO PARA TRÁS [2600]
+ROTAÇÃO PARA A FRENTE [1150]
+
+SERVO PERNA ESQUERDA:
+
+INICIAL [1575]
+ROTAÇÃO PARA TRÁS [550]
+ROTAÇÃO PARA A FRENTE [2550]
